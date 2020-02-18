@@ -6,7 +6,9 @@ import re
 cwd = pathlib.Path(__file__).parent.absolute()
 dpath = pathlib.PurePath(cwd, 'data')
 
-PROGRAM = re.compile('(\[[a-z]+\])')
+REGEX = '\[[a-z]+\]'
+PROGRAM = re.compile(f'({REGEX})')
+
 
 class Protocol:
     def __init__(self, data):
@@ -37,7 +39,7 @@ class Protocol:
             part = part.strip('[').strip(']')
             if self.has_abba(part):
                 return False
-        outer = self.get_outer(ip, inner)
+        outer = self.get_outer(ip)
         for part in outer:
             if self.has_abba(part):
                 return True
@@ -45,7 +47,7 @@ class Protocol:
 
     def has_ssl(self, ip):
         inner = self.get_inner(ip)
-        outer = self.get_outer(ip, inner)
+        outer = self.get_outer(ip)
         for outer_word in outer:
             all_aba = self.get_aba(outer_word)
             for aba in all_aba:
@@ -58,9 +60,8 @@ class Protocol:
     def get_inner(self, ip):
         return PROGRAM.findall(ip)
 
-    def get_outer(self, ip, inner):
-        r = [x.replace('[', '\[').replace(']', '\]') for x in inner]
-        return re.split('|'.join(r), ip)
+    def get_outer(self, ip):
+        return re.split(REGEX, ip)
 
     def count_tls(self):
         count = 0
