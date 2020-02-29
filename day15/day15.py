@@ -16,19 +16,26 @@ class Structure:
     def __init__(self, data):
         self.data = copy.deepcopy(data)
 
-    def next(self, state=None):
+    def next(self, state=None, jump=1):
         if state is None:
             state = self.data
         for elt in state:
             nmod = elt[0]
-            elt[1] = (elt[1] + 1) % nmod
+            elt[1] = (elt[1] + jump) % nmod
 
     def find_first_valid(self):
         state = copy.deepcopy(self.data)
-        for i in count():
+        i = 0
+        j, maxelt = max(enumerate(state), key=lambda x: x[0])
+        jump = maxelt[0] - maxelt[1] - (j+1)
+        self.next(state=state, jump=jump)
+        i += jump
+        fulljump = maxelt[0]
+        while True:
             if self.test_valid(state):
                 return i
-            self.next(state)
+            self.next(state, jump=fulljump)
+            i += fulljump
 
     def test_valid(self, state):
         for elt in state:
