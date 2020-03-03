@@ -1,20 +1,20 @@
 """day21.py
 """
 import pathlib
+from itertools import permutations
+
 
 cwd = pathlib.Path(__file__).parent.absolute()
 dpath = pathlib.PurePath(cwd, 'data')
-tpath = pathlib.PurePath(cwd, 'test')
-
 INPUT = 'abcdefgh'
-INPUT = 'abcde'
-pwd = [ch for ch in INPUT]
 
 
-with open(tpath, 'r') as f:
+with open(dpath, 'r') as f:
     data = f.read().splitlines()
+
+
+def scramble(data, pwd):
     for line in data:
-        print(''.join(pwd))
         if 'swap position' in line:
             _, _, n1, _, _, n2 = line.split()
             n1, n2 = int(n1), int(n2)
@@ -30,6 +30,7 @@ with open(tpath, 'r') as f:
             n = 1 + index
             if index >= 4:
                 n += 1
+            n = n % len(pwd)
             pwd = pwd[-n:] + pwd[:-n]
         elif 'rotate right' in line:
             n = line.split()[-2]
@@ -49,8 +50,19 @@ with open(tpath, 'r') as f:
             l = pwd.pop(n1)
             pwd.insert(n2, l)
         else:
-            print('Not found.')
-        # print(line)
+            print('Instruction not found.')
+    return ''.join(pwd)
 
-print(pwd)
+
+pwd = [ch for ch in INPUT]
+out = scramble(data, pwd)
+print(f'Part 1: {out}')
+
+key = 'fbgdceah'
+pwd = [x for x in key]
+for permute in permutations(pwd, len(pwd)):
+    out = scramble(data, list(permute))
+    if ''.join(out) == key:
+        print(f'Part 2: {"".join(permute)}')
+        break
 
