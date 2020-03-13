@@ -3,7 +3,6 @@
 import pathlib
 from itertools import permutations
 
-
 cwd = pathlib.Path(__file__).parent.absolute()
 dpath = pathlib.PurePath(cwd, 'data')
 INPUT = 'abcdefgh'
